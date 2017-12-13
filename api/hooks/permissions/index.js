@@ -43,7 +43,10 @@ class Permissions extends Marlinspike {
     })
 
     this.sails.after('hook:orm:loaded', () => {
-      sails.models.model.count()
+      if (this.sails.config.permissions.skipFixtureInitialization) {
+        next();
+      } else {
+        sails.models.model.count()
         .then(count => {
           if (count === _.keys(this.sails.models).length) return next()
 
@@ -56,6 +59,7 @@ class Permissions extends Marlinspike {
           this.sails.log.error(error)
           next(error)
         })
+      }      
     })
   }
 
